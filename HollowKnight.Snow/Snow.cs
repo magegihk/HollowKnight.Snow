@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Modding;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Modding;
 using UnityEngine;
+using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 namespace HollowKnight.Snow
 {
-    public class Snow : Mod<SaveSettings, GlobalSettings>,ITogglableMod
+    public class Snow : Mod, ITogglableMod
     {
+
         internal static Snow instance;
+        
         internal GameObject Snowobj;
+
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             instance = this;
@@ -22,25 +23,10 @@ namespace HollowKnight.Snow
             Snowobj.AddComponent<ParticleHandler>();
             GameObject.DontDestroyOnLoad(Snowobj);
 
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
-        }
-
-        private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
-        {
-            if (HeroController.instance != null && arg1.name != "Menu_Title" && arg1.name != "Quit_To_Menu")
-            {
-                GameObject mySnow = ParticleHandler.Snow0;
-
-                mySnow.transform.SetPosition2D(HeroController.instance.transform.position + new Vector3(0, 10, 0));
-                mySnow.transform.SetParent(HeroController.instance.transform);
-                mySnow.SetActive(true);
-                foreach (Transform child in mySnow.transform)
-                {
-                    child.gameObject.SetActive(true);
-                    child.gameObject.GetComponent<ParticleSystem>().Play();
-                }
-            }
-
+            //Some how preload objects will stop Randomizer2.0 from generating menu.
+            //Something to do with API?
+            //Load menu to trigger activescenechanged.
+            USceneManager.LoadScene("Quit_To_Menu");
         }
 
         
@@ -54,9 +40,10 @@ namespace HollowKnight.Snow
                 ("Deepnest_East_13","outskirts_particles/wispy smoke FG")
             };
         }
+
         public override string GetVersion()
         {
-            return "v1.0";
+            return "v1.1";
         }
 
         public override bool IsCurrent()
@@ -66,8 +53,7 @@ namespace HollowKnight.Snow
 
         public void Unload()
         {
-            UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-            ParticleHandler.StopSnow();
+            GameObject.DestroyImmediate(ParticleHandler.Clone);
             GameObject.DestroyImmediate(Snowobj);
         }
     }
