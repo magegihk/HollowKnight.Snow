@@ -26,7 +26,7 @@ namespace HollowKnight.Snow
             //Some how preload objects will stop Randomizer2.0 from generating menu.
             //Something to do with API?
             //Load menu to trigger activescenechanged.
-            USceneManager.LoadScene("Quit_To_Menu");
+            //USceneManager.LoadScene("Quit_To_Menu");
         }
 
         
@@ -43,7 +43,7 @@ namespace HollowKnight.Snow
 
         public override string GetVersion()
         {
-            return "v1.1";
+            return "v1.1.03";
         }
 
         public override bool IsCurrent()
